@@ -51,18 +51,32 @@ public class CCommand extends Command {
 		
 	}
 
-	private Object[] getMethodParameters(Method m){
+	private Object[] getMethodParameters(Method m) throws NoSuchMethodException{
 		ArrayList<Object> methodPar = new ArrayList<Object>();
 		for (int i = 0; i < m.getParameterTypes().length; i++) {
+			Class<?> par = m.getParameterTypes()[i]; 
 			/**
 			 * A melhorar: 
 			 * 	- suporte para mais tipos de argumentos além de ints;
+			 * 			- Até agora suporta tipos primitivos: int, double, String, boolean, long e char
 			 * 	- fazer com que isto não seja um comboio de if's
 			 */
-			if (int.class.equals(m.getParameterTypes()[i])) {
-				methodPar.add(new Integer(args[i+1]));
-			} else {
-				//...
+			String parValue = args[i+1];
+			if (int.class.equals(par) || int.class.equals(par)) {
+				methodPar.add(new Integer(parValue));
+			}else if(Double.class.equals(par) || double.class.equals(par)){
+				methodPar.add(new Double(parValue));
+			} else if(String.class.equals(par)) {
+				methodPar.add(parValue);
+			} else if (Boolean.class.equals(par) || boolean.class.equals(par)){
+				methodPar.add(new Boolean(parValue));
+			}else if (Long.class.equals(par) || long.class.equals(par)){
+				methodPar.add(new Long(parValue));
+			}else if ((Character.class.equals(par) || char.class.equals(par)) && parValue.toCharArray().length == 1){
+				methodPar.add(new Character(parValue.toCharArray()[0]));
+			}else{
+				System.err.println("Error: Unable to convert arguments");
+				throw new NoSuchMethodException();
 			}
 		}
 		return methodPar.toArray();
@@ -73,6 +87,7 @@ public class CCommand extends Command {
 			if (m.getName().equals(args[0])
 					&& m.getParameterTypes().length == (args.length - 1)) {
 				return m;
+				
 			}
 		}
 		throw new NoSuchMethodException();
