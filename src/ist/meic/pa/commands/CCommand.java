@@ -1,5 +1,6 @@
 package ist.meic.pa.commands;
 
+import ist.meic.pa.InspectionState;
 import ist.meic.pa.Utils;
 
 import java.lang.reflect.Constructor;
@@ -9,12 +10,12 @@ import java.util.ArrayList;
 
 public class CCommand extends Command {
 
-	public CCommand(Object obj, String[] args) {
-		super(obj, args);
+	public CCommand(InspectionState state, String[] args) {
+		super(state, args);
 	}
 
 	@Override
-	public Object execute() throws IllegalArgumentException,
+	public InspectionState execute() throws IllegalArgumentException,
 			IllegalAccessException {
 		if (args.length != 1) {
 			return handleMethodWithParams();
@@ -24,38 +25,45 @@ public class CCommand extends Command {
 		}
 	}
 
-	private Object handleMethodWithParams() throws IllegalAccessException,
+	private InspectionState handleMethodWithParams() throws IllegalAccessException,
 			IllegalArgumentException {
 		try {
 			Method m = getMethodByName();
 			Object[] methodParameters = getMethodParameters(m);
-			return m.invoke(obj, methodParameters);
+			Object result = m.invoke(this.state.getCurrentObject(), methodParameters);
+			this.state.setCurrentObject(result);
+			
+			return this.state;
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
-			return obj;
+			return this.state;
 		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return obj;
+			return this.state;
 		}
 
 	}
 
-	private Object handleMethod() throws IllegalAccessException,
+	private InspectionState handleMethod() throws IllegalAccessException,
 			IllegalArgumentException {
 		try {
-			Object result = obj.getClass().getDeclaredMethod(args[0])
-					.invoke(obj);
-			return result;
+			Object current = this.state.getCurrentObject();
+			Object result = current.getClass().getDeclaredMethod(args[0])
+					.invoke(current);
+			
+			this.state.setCurrentObject(result);
+			
+			return this.state;
 		} catch (NoSuchMethodException e) {
 			System.err.println("Unable to fulfill request");
-			return obj;
+			return this.state;
 		} catch (SecurityException e) {
 			System.err.println("Unable to fulfill request");
-			return obj;
+			return this.state;
 		} catch (InvocationTargetException e) {
 			System.err.println("Unable to fulfill request");
-			return obj;
+			return this.state;
 		}
 
 	}
@@ -94,7 +102,7 @@ public class CCommand extends Command {
 	}
 
 	private Method getMethodByName() throws NoSuchMethodException {
-		for (Method m : obj.getClass().getDeclaredMethods()) {
+		for (Method m : this.state.getCurrentObject().getClass().getDeclaredMethods()) {
 			if (m.getName().equals(args[0])
 					&& m.getParameterTypes().length == (args.length - 1)) {
 				return m;

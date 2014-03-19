@@ -7,13 +7,14 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.Stack;
 
 public class Inspector {
 	
-	private Object object;
+	private InspectionState state;
 	
 	public void inspect(Object object) throws IllegalArgumentException, IllegalAccessException {
-		this.object = object;
+		this.state = new InspectionState(object);
 		
 		Utils.dumpObject(object);
 		
@@ -56,12 +57,12 @@ public class Inspector {
 		String className = "ist.meic.pa.commands." + command[0].toUpperCase() + "Command";
 		Class<?> c = Class.forName(className);
 		Constructor<?> constructor = c.getConstructors()[0];
-		Object[] args = new Object[] { object, Arrays.copyOfRange(command, 1, command.length) };
+		Object[] args = new Object[] { this.state, Arrays.copyOfRange(command, 1, command.length) };
 		Command cmd = (Command) constructor.newInstance(args);
 		
-		this.object = cmd.execute();
+		this.state = cmd.execute();
 		
-		Utils.dumpObject(this.object);
+		Utils.dumpObject(this.state.getCurrentObject());
 	}
 
 	public static void main(String[] args) {

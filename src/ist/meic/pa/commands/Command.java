@@ -1,14 +1,16 @@
 package ist.meic.pa.commands;
 
+import ist.meic.pa.InspectionState;
+
 public abstract class Command {
 	
-	protected Object obj;
+	protected InspectionState state;
 	protected String[] args;
 	
-	public Command(Object obj, String[] args) {
-		this.obj = obj;
+	public Command(InspectionState state, String[] args) {
+		this.state = state;
 		this.args = args;
 	}
 	
-	public abstract Object execute() throws IllegalArgumentException, IllegalAccessException; 
+	public abstract InspectionState execute() throws IllegalArgumentException, IllegalAccessException; 
 }

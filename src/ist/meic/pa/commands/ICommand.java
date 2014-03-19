@@ -2,27 +2,31 @@ package ist.meic.pa.commands;
 
 import java.lang.reflect.Field;
 
+import ist.meic.pa.InspectionState;
 import ist.meic.pa.Utils;
 
 public class ICommand extends Command {
 
-	public ICommand(Object obj, String[] args) {
-		super(obj, args);
+	public ICommand(InspectionState state, String[] args) {
+		super(state, args);
+		// TODO Auto-generated constructor stub
 	}
 
 	@Override
-	public Object execute() throws IllegalArgumentException, IllegalAccessException {
+	public InspectionState execute() throws IllegalArgumentException, IllegalAccessException {
 		if (this.args.length > 0) {
+			Object obj = this.state.getCurrentObject();
 			 String attr = this.args[0];
-			 for (Field f : Utils.getAllFields(this.obj)) {
+			 for (Field f : Utils.getAllFields(obj)) {
 				 if (f.getName().equals(attr)) {
 					 f.setAccessible(true);
-					 this.obj = f.get(this.obj);
+					 obj = f.get(obj);
+					 this.state.setCurrentObject(obj);
 					 break;
 				 }
 			 }
 		}
-		return this.obj;
+		return this.state;
 	}
 
 }

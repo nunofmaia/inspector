@@ -1,18 +1,19 @@
 package ist.meic.pa.commands;
 
+import ist.meic.pa.InspectionState;
 import ist.meic.pa.Utils;
 
 public class DCommand extends Command {
 
-	public DCommand(Object obj, String[] args) {
-		super(obj, args);
+	public DCommand(InspectionState state, String[] args) {
+		super(state, args);
 	}
 
 	@Override
-	public Object execute() throws IllegalArgumentException, IllegalAccessException {
+	public InspectionState execute() throws IllegalArgumentException, IllegalAccessException {
 		
-		Utils.dumpObject(this.obj);
+		Utils.dumpObject(this.state.getCurrentObject());
 		
-		return this.obj;
+		return this.state;
 	}
 }
