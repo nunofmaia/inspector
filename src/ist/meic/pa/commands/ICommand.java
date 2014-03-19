@@ -18,7 +18,6 @@ public class ICommand extends Command {
 				 if (f.getName().equals(attr)) {
 					 f.setAccessible(true);
 					 this.obj = f.get(this.obj);
-					 System.err.println(this.obj);
 					 break;
 				 }
 			 }

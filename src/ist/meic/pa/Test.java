@@ -3,6 +3,7 @@ package ist.meic.pa;
 public class Test {
 
 	public int d;
+	public boolean b;
 	
 	public Test m1(){
 		System.out.println("Hello, I am " + this);
@@ -43,5 +44,9 @@ public class Test {
 	public Test myBool(boolean b){
 		System.out.println("Your argument is " + b);
 		return this;
+	}
+	
+	public int giveMeInt() {
+		return 100;
 	}
 }

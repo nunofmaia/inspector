@@ -23,12 +23,12 @@ public class MCommand extends Command {
 					if (c.getSimpleName().equals("Integer")) {
 							 f.set(this.obj, Integer.parseInt(value));
 					}
-					
-					Utils.dumpObject(this.obj);
+
 					break;
 				}
 			}
 		}
+		
 		return this.obj;
 
 	}

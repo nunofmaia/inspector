@@ -59,7 +59,9 @@ public class Inspector {
 		Object[] args = new Object[] { object, Arrays.copyOfRange(command, 1, command.length) };
 		Command cmd = (Command) constructor.newInstance(args);
 		
-		this.object = cmd.execute();	
+		this.object = cmd.execute();
+		
+		Utils.dumpObject(this.object);
 	}
 
 	public static void main(String[] args) {
