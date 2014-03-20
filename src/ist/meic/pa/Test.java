@@ -4,6 +4,7 @@ public class Test {
 
 	public int d;
 	public boolean b;
+	public String name = "Test";
 	
 	public Test m1(){
 		System.out.println("Hello, I am " + this);
