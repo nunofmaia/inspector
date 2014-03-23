@@ -16,6 +16,11 @@ public class Test {
 		return this;
 	}
 	
+	public Test m3(float f) {
+		System.out.println("Printing float " + f);
+		return this;
+	}
+	
 	public Test sum(int i1, int i2){
 		System.out.println("Sum: " + (i1+i2));
 		return this;
@@ -49,5 +54,25 @@ public class Test {
 	
 	public int giveMeInt() {
 		return 100;
+	}
+	
+	public Test anArray(int[] arr) {
+		System.out.print("This is an array: [");
+		for (int i : arr) {
+			System.out.print(" ");
+			System.out.print(i);
+		}
+		System.out.println(" ]");
+		return this;
+	}
+	
+	public Test anArrayFloating(float[] arr) {
+		System.out.print("This is a floating array: [");
+		for (float i : arr) {
+			System.out.print(" ");
+			System.out.print(i);
+		}
+		System.out.println(" ]");
+		return this;
 	}
 }
