@@ -31,11 +31,12 @@ public class TypeChecking {
 	
 	@Type({ "char", "Character" })
 	public static Object processChar(String value) {
-		return new Character(value.toCharArray()[0]);
+		String stripped = value.substring(1, value.length() - 1);
+		return new Character(stripped.toCharArray()[0]);
 	}
 	
 	@Type("String")
 	public static Object processString(String value) {
-		return value;
+		return value.substring(1, value.length() - 1);
 	}
 }

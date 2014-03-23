@@ -36,16 +36,6 @@ public class MCommand extends Command {
 
 				handleChoice(fields, value);
 			}
-//			for (Field f : Utils.getAllFields(obj)) {
-//				if (f.getName().equals(attr)) {
-//					f.setAccessible(true);
-//					Class<?> c = f.get(obj).getClass();
-//					f.set(obj, processType(c, value));
-//					this.state.updateState(obj);
-//
-//					break;
-//				}
-//			}
 		}
 		
 		return this.state;
