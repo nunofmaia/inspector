@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 public class Utils {
 	
@@ -31,6 +30,31 @@ public class Utils {
 		}
 		return allFields;
 	}
+	
+	
+	public static ArrayList<Field> getField(Object object, String name) {
+		ArrayList<Field> fields = new ArrayList<Field>();
+		
+		for (Field f : getAllFields(object)) {
+			String fieldName = f.getName();
+			//caso o atributo dado no input contenha a package tb se procuram as packages dos fields para fazer match
+			if (name.split("\\.").length > 1) {
+				fieldName = f.getDeclaringClass().getName() + "." + f.getName();
+			}
+			if (fieldName.equals(name)) {
+				fields.add(f);
+			}
+		}
+		
+		return fields;
+	}
+	
+	public static void dumpChoiceList(ArrayList<?> list) {
+		for (int i = 0; i < list.size(); i++) {
+			System.err.println("[" + i + "] " + list.get(i));
+		}
+	}
+	
 
 	public static void dumpObject(Object object) throws IllegalAccessException {
 		Class<?> c = object.getClass();

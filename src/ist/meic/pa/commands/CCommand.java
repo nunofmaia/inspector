@@ -5,7 +5,6 @@ import ist.meic.pa.TypeChecking;
 import ist.meic.pa.annotations.Type;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;

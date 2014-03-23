@@ -1,6 +1,6 @@
 package ist.meic.pa;
 
-public class Test {
+public class Test extends SuperTest {
 
 	public int d;
 	public boolean b;
