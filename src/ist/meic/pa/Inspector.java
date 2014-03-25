@@ -14,11 +14,16 @@ public class Inspector {
 	private InspectionState state;
 	
 	public void inspect(Object object) throws IllegalArgumentException, IllegalAccessException {
-		this.state = new InspectionState(object);
 		
-		Utils.dumpObject(object);
-		
-		prompt();
+		if (object != null)  {
+			this.state = new InspectionState(object);
+			
+			Utils.dumpObject(object);
+			
+			prompt();
+		} else {
+			System.err.println("The object you want to inspect is null.");
+		}
 		
 	}
 	

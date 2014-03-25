@@ -27,6 +27,17 @@ public class Test extends SuperTest {
 		
 	}
 	
+	public Test sum(float f1, float f2){
+		System.out.println("Sum: " + (f1+f2));
+		return this;
+		
+	}
+	
+	public Test sum(String s1, String s2) {
+		System.out.println(s1 + s2);
+		return this;
+	}
+	
 	public Test sayMyName(String name){
 		System.out.println("Your name is " + name);
 		return this;
@@ -74,5 +85,9 @@ public class Test extends SuperTest {
 		}
 		System.out.println(" ]");
 		return this;
+	}
+	
+	public void noReturn() {
+		System.out.println("No turning back");
 	}
 }

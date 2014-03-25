@@ -1,6 +1,7 @@
 package ist.meic.pa;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +32,18 @@ public class Utils {
 		return allFields;
 	}
 	
+	public static ArrayList<Method> getAllMethods(Object object) {
+		Class<?> c = object.getClass();
+		ArrayList<Method> allMethods = new ArrayList<Method>();
+		while (c != null) {
+			for (Method f : c.getDeclaredMethods()) {
+				allMethods.add(f);
+			}
+			c = c.getSuperclass();
+		}
+		return allMethods;
+	}
+	
 	
 	public static ArrayList<Field> getField(Object object, String name) {
 		ArrayList<Field> fields = new ArrayList<Field>();
@@ -58,6 +71,7 @@ public class Utils {
 
 	public static void dumpObject(Object object) throws IllegalAccessException {
 		Class<?> c = object.getClass();
+		
 		if (map.containsValue(c)) {
 			System.err.println(object);
 		} else {
