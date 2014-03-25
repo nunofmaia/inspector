@@ -2,6 +2,7 @@ package ist.meic.pa;
 
 
 import ist.meic.pa.commands.Command;
+import ist.meic.pa.exceptions.QuitException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -24,9 +25,8 @@ public class Inspector {
 	private void prompt() {
 		
 		Scanner scanner = new Scanner(System.in);
-		boolean isActive = true;
 		
-		while (isActive) {
+		while (true) {
 			System.err.print("> ");
 			String[] command = scanner.nextLine().split(" ");
 			
@@ -48,12 +48,17 @@ public class Inspector {
 			} catch (InvocationTargetException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} catch (QuitException e) {
+				break;
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}			
 		}
 		
 	}
 
-	private void executeCommand(String[] command) throws ClassNotFoundException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
+	private void executeCommand(String[] command) throws Exception {
 		String className = "ist.meic.pa.commands." + command[0].toUpperCase() + "Command";
 		Class<?> c = Class.forName(className);
 		Constructor<?> constructor = c.getConstructors()[0];
@@ -70,6 +75,8 @@ public class Inspector {
 		
 		try {
 			new Inspector().inspect(s);
+			System.out.println("Finished inspection and program");
+			System.out.println(1 + 1);
 		} catch (IllegalArgumentException e1) {
 			
 		} catch (IllegalAccessException e1) {

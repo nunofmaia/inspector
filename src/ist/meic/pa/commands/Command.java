@@ -12,5 +12,5 @@ public abstract class Command {
 		this.args = args;
 	}
 	
-	public abstract InspectionState execute() throws IllegalArgumentException, IllegalAccessException; 
+	public abstract InspectionState execute() throws Exception; 
 }
