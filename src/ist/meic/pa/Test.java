@@ -75,4 +75,9 @@ public class Test extends SuperTest {
 		System.out.println(" ]");
 		return this;
 	}
+	
+	public Test testObj (Test obj){
+		System.out.println("I got an object: " + obj);
+		return this;
+	}
 }

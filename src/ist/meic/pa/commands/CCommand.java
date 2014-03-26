@@ -26,6 +26,9 @@ public class CCommand extends Command {
 		}
 	}
 
+	/*
+	 * If the method to call has parameters, they must be handled (check types and create an array of Object)
+	 */
 	private InspectionState handleMethodWithParams()
 			throws IllegalAccessException, IllegalArgumentException {
 		try {
@@ -40,7 +43,6 @@ public class CCommand extends Command {
 			e.printStackTrace();
 			return this.state;
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return this.state;
 		}
@@ -83,18 +85,6 @@ public class CCommand extends Command {
 		return methodPar.toArray();
 	}
 
-//	public void addParameter(ArrayList<Object> params, String value,
-//			Class<?> clazz) {
-//
-//		try {
-//			Constructor<?> con = clazz.getConstructor(String.class);
-//			Object[] sdoid = new Object[] { value };
-//			params.add(con.newInstance(sdoid));
-//		} catch (Exception e) {
-//			System.err.println("error");
-//		}
-//	}
-
 	private Method getMethodByName() throws NoSuchMethodException {
 		for (Method m : this.state.getCurrentObject().getClass()
 				.getDeclaredMethods()) {
@@ -111,6 +101,7 @@ public class CCommand extends Command {
 	private Object processType(Class<?> type, String value) {
 		String typeName = type.getSimpleName();
 		Class<?> checker = TypeChecking.class;
+		boolean hasMatch = false;
 		for (Method m : checker.getDeclaredMethods()) {
 			Type t = m.getAnnotation(Type.class);
 			if (t != null) {
@@ -127,16 +118,22 @@ public class CCommand extends Command {
 				} else {
 					for (String v : t.value()) {
 						if (v.equals(typeName)) {
+							hasMatch = true;
 							Object[] args = new Object[] { value };
 							try {
 								return m.invoke(null, args);
 							} catch (Exception e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 						}
 					}					
 				}
+			}
+		}
+		if(!hasMatch && state.getSavedObjects().containsKey(value)){
+			Object o  = state.getSavedObjects().get(value);
+			if(o.getClass().equals(type)){
+				return o;
 			}
 		}
 
