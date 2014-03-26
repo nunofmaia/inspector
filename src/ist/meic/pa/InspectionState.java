@@ -1,11 +1,18 @@
 package ist.meic.pa;
 
+import java.util.HashMap;
+import java.util.Map;
+
+
 public class InspectionState {
 
 	private Node currentNode;
+	private Map<String, Object> savedObjects;
 	
 	public InspectionState(Object object) {
 		this.currentNode = new Node(object);
+		this.savedObjects = new HashMap<String, Object>();
+
 	}
 
 	public Object getCurrentObject() {
@@ -29,5 +36,9 @@ public class InspectionState {
 	
 	public void setCurrentNode(Node node) {
 		this.currentNode = node;
+	}
+	
+	public Map<String, Object> getSavedObjects() {
+		return savedObjects;
 	}
 }

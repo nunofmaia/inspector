@@ -87,11 +87,18 @@ public class Test extends SuperTest {
 		return this;
 	}
 	
+
 	public void noReturn() {
 		System.out.println("No turning back");
 	}
 	
 	public String aString() {
 		return "Hello world";
+	}
+
+	public Test testObj (Test obj){
+		System.out.println("I got an object: " + obj);
+		return this;
+
 	}
 }
