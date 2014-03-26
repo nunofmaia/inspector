@@ -27,6 +27,7 @@ public class InspectionState {
 	}
 	
 	public void updateState(Object updatedObject) {
+		this.currentNode.setNext(null);
 		this.currentNode.setObject(updatedObject);
 	}
 	

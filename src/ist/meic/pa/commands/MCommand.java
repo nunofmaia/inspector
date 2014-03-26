@@ -4,14 +4,11 @@ import ist.meic.pa.InspectionState;
 import ist.meic.pa.TypeChecking;
 import ist.meic.pa.Utils;
 import ist.meic.pa.annotations.Type;
-import ist.meic.pa.exceptions.InvalidArgumentException;
 import ist.meic.pa.exceptions.WrongTypeException;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Scanner;
 
 public class MCommand extends Command {
 
@@ -27,7 +24,7 @@ public class MCommand extends Command {
 			String attr = this.args[0];
 			String value = this.args[1];
 
-			Field field = getField(clazz, attr);
+			Field field = Utils.getField(clazz, attr);
 			try {
 				updateField(field, value);
 			} catch (IllegalArgumentException e) {
@@ -41,38 +38,6 @@ public class MCommand extends Command {
 		}
 
 		return this.state;
-
-	}
-
-	private Field getField(Class<?> clazz, String fieldName)
-			throws NoSuchFieldException {
-
-		String className = Utils.getClassName(fieldName);
-		String attr = Utils.getAttributeName(fieldName);
-		
-		try {
-			if (className.isEmpty()) {
-				return clazz.getDeclaredField(fieldName);
-			} else {
-				Class<?> newClazz = Class.forName(className);
-				return newClazz.getDeclaredField(attr);
-			}
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchFieldException e) {
-			Class<?> superClazz = clazz.getSuperclass();
-			if (superClazz != null) {
-				return getField(superClazz, fieldName);
-			} else {
-				throw new NoSuchFieldException();
-			}
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			throw new NoSuchFieldException();
-		}
-
-		return null;
 
 	}
 

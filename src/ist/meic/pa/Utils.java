@@ -44,22 +44,36 @@ public class Utils {
 		return allMethods;
 	}
 	
-	
-	public static ArrayList<Field> getField(Object object, String name) {
-		ArrayList<Field> fields = new ArrayList<Field>();
+	public static Field getField(Class<?> clazz, String fieldName)
+			throws NoSuchFieldException {
+
+		String className = Utils.getClassName(fieldName);
+		String attr = Utils.getAttributeName(fieldName);
 		
-		for (Field f : getAllFields(object)) {
-			String fieldName = f.getName();
-			//caso o atributo dado no input contenha a package tb se procuram as packages dos fields para fazer match
-			if (name.split("\\.").length > 1) {
-				fieldName = f.getDeclaringClass().getName() + "." + f.getName();
+		try {
+			if (className.isEmpty()) {
+				return clazz.getDeclaredField(fieldName);
+			} else {
+				Class<?> newClazz = Class.forName(className);
+				return newClazz.getDeclaredField(attr);
 			}
-			if (fieldName.equals(name)) {
-				fields.add(f);
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchFieldException e) {
+			Class<?> superClazz = clazz.getSuperclass();
+			if (superClazz != null) {
+				return getField(superClazz, fieldName);
+			} else {
+				throw new NoSuchFieldException();
 			}
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			throw new NoSuchFieldException();
 		}
-		
-		return fields;
+
+		return null;
+
 	}
 	
 	public static void dumpChoiceList(ArrayList<?> list) {
