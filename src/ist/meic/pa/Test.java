@@ -90,4 +90,8 @@ public class Test extends SuperTest {
 	public void noReturn() {
 		System.out.println("No turning back");
 	}
+	
+	public String aString() {
+		return "Hello world";
+	}
 }

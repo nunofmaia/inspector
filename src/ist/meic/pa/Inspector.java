@@ -36,7 +36,6 @@ public class Inspector {
 			String[] command = scanner.nextLine().split(" ");
 			
 			try {
-				// TODO Quit command is missing
 				executeCommand(command);
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block

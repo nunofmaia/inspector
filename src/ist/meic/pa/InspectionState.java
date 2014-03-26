@@ -1,36 +1,33 @@
 package ist.meic.pa;
 
-import java.util.Stack;
-
 public class InspectionState {
-	private Object currentObject;
-	private Stack<Object> history;
+
+	private Node currentNode;
 	
 	public InspectionState(Object object) {
-		this.currentObject = object;
-		this.history = new Stack<Object>();
+		this.currentNode = new Node(object);
 	}
 
 	public Object getCurrentObject() {
-		return currentObject;
+		return currentNode.getObject();
 	}
 
 	public void setCurrentObject(Object currentObject) {
-		Object previous = this.currentObject;
-		this.history.push(previous);
-		
-		this.currentObject = currentObject;
+		Node newNode = new Node(currentObject);
+		this.currentNode.setNext(newNode);
+		newNode.setPrevious(this.currentNode);
+		this.currentNode = newNode;
 	}
 	
 	public void updateState(Object updatedObject) {
-		this.currentObject = updatedObject;
+		this.currentNode.setObject(updatedObject);
 	}
-
-	public Stack<Object> getHistory() {
-		return history;
+	
+	public Node getCurrentNode() {
+		return this.currentNode;
 	}
-
-	public void setHistory(Stack<Object> history) {
-		this.history = history;
+	
+	public void setCurrentNode(Node node) {
+		this.currentNode = node;
 	}
 }
