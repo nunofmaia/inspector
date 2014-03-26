@@ -16,4 +16,9 @@ public class DCommand extends Command {
 		
 		return this.state;
 	}
+	
+	@Override
+	public String usage() {
+		return "Usage: d";
+	}
 }

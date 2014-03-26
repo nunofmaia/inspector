@@ -1,9 +1,10 @@
-package ist.meic.pa.commands;
+ package ist.meic.pa.commands;
 
 import ist.meic.pa.InspectionState;
 import ist.meic.pa.TypeChecking;
 import ist.meic.pa.Utils;
 import ist.meic.pa.annotations.Type;
+import ist.meic.pa.exceptions.InvalidArgumentException;
 import ist.meic.pa.exceptions.WrongTypeException;
 
 import java.lang.reflect.Array;
@@ -21,12 +22,14 @@ public class CCommand extends Command {
 
 	@Override
 	public InspectionState execute() throws IllegalArgumentException,
-			IllegalAccessException {
-		if (args.length != 1) {
+			IllegalAccessException, InvalidArgumentException {
+		
+		if (args.length > 1) {
 			return handleMethodWithParams();
-		} else {
+		} else if (args.length == 1) {
 			return handleMethod();
-
+		} else {
+			throw new InvalidArgumentException();
 		}
 	}
 
@@ -183,6 +186,11 @@ public class CCommand extends Command {
 		}
 		
 		return null;
+	}
+	
+	@Override
+	public String usage() {
+		return "Usage: c <method> <arg-1> ... <arg-n>";
 	}
 
 }

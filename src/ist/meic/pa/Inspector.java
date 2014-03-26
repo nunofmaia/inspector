@@ -2,6 +2,7 @@ package ist.meic.pa;
 
 
 import ist.meic.pa.commands.Command;
+import ist.meic.pa.exceptions.InvalidArgumentException;
 import ist.meic.pa.exceptions.QuitException;
 
 import java.lang.reflect.Constructor;
@@ -15,7 +16,7 @@ public class Inspector {
 	
 	public void inspect(Object object) throws IllegalArgumentException, IllegalAccessException {
 		
-		if (object != null)  {
+		if (object != null) {
 			this.state = new InspectionState(object);
 			
 			Utils.dumpObject(object);
@@ -33,19 +34,17 @@ public class Inspector {
 		
 		while (true) {
 			System.err.print("> ");
-			String[] command = scanner.nextLine().split(" ");
+			String[] command = scanner.nextLine().split(" +");
 			
 			try {
 				executeCommand(command);
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.err.println("ERROR: Command not found.");
 			} catch (IllegalArgumentException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.err.println("ERROR: Invalid syntax.");
 			} catch (IllegalAccessException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -59,17 +58,24 @@ public class Inspector {
 				e.printStackTrace();
 			}			
 		}
-		
+		scanner.close();
 	}
 
 	private void executeCommand(String[] command) throws Exception {
 		String className = "ist.meic.pa.commands." + command[0].toUpperCase() + "Command";
+		
 		Class<?> c = Class.forName(className);
 		Constructor<?> constructor = c.getConstructors()[0];
 		Object[] args = new Object[] { this.state, Arrays.copyOfRange(command, 1, command.length) };
 		Command cmd = (Command) constructor.newInstance(args);
 		
-		this.state = cmd.execute();
+		try {
+			this.state = cmd.execute();			
+		} catch (InvalidArgumentException e) {
+			System.err.println(cmd.usage());
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		
 		Utils.dumpObject(this.state.getCurrentObject());
 	}
