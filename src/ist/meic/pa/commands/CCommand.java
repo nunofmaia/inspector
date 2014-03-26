@@ -8,7 +8,6 @@ import ist.meic.pa.exceptions.InvalidArgumentException;
 import ist.meic.pa.exceptions.WrongTypeException;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -184,7 +183,7 @@ public class CCommand extends Command {
 				System.err.println("Enter a valid number between 0 and " + (methods.size() - 1) + ".");
 			}
 		}
-		
+		scanner.close();
 		return null;
 	}
 	

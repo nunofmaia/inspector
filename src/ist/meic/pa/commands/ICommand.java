@@ -58,6 +58,7 @@ public class ICommand extends Command {
 				System.err.println("Enter a valid number between 0 and " + (fields.size() - 1) + ".");
 			}
 		}
+		scanner.close();
 	}
 	
 	private void getField(Field f) throws IllegalArgumentException, IllegalAccessException {

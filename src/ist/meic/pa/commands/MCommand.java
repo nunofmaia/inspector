@@ -72,6 +72,7 @@ public class MCommand extends Command {
 				System.err.println("Enter a valid number between 0 and " + (fields.size() - 1) + ".");
 			}
 		}
+		scanner.close();
 	}
 	
 	private Object processType(Class<?> type, String value) {
