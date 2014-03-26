@@ -12,5 +12,7 @@ public abstract class Command {
 		this.args = args;
 	}
 	
-	public abstract InspectionState execute() throws Exception; 
+	public abstract InspectionState execute() throws Exception;
+
+	public abstract String usage(); 
 }

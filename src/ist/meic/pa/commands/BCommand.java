@@ -32,4 +32,9 @@ public class BCommand extends Command {
 		return this.state;
 	}
 
+	@Override
+	public String usage() {
+		return "B command usage guide";
+	}
+
 }

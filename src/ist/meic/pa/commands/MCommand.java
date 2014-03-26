@@ -4,6 +4,7 @@ import ist.meic.pa.InspectionState;
 import ist.meic.pa.TypeChecking;
 import ist.meic.pa.Utils;
 import ist.meic.pa.annotations.Type;
+import ist.meic.pa.exceptions.InvalidArgumentException;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -18,9 +19,8 @@ public class MCommand extends Command {
 	}
 
 	@Override
-	public InspectionState execute() throws IllegalArgumentException, IllegalAccessException {
-		// TODO Auto-generated method stub
-		if (this.args.length > 1) {
+	public InspectionState execute() throws IllegalArgumentException, IllegalAccessException, InvalidArgumentException {
+		if (this.args.length == 2) {
 			Object obj = this.state.getCurrentObject();
 			String attr = this.args[0];
 			String value = this.args[1];
@@ -36,6 +36,8 @@ public class MCommand extends Command {
 
 				handleChoice(fields, value);
 			}
+		} else {
+			throw new InvalidArgumentException();
 		}
 		
 		return this.state;
@@ -107,4 +109,8 @@ public class MCommand extends Command {
 		return null;
 	}
 
+	@Override
+	public String usage() {
+		return "Usage: m <field> <value>";
+	}
 }
