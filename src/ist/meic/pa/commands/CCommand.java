@@ -157,7 +157,14 @@ public class CCommand extends Command {
 							try {
 								return m.invoke(null, args);
 							} catch (Exception e) {
-								throw new WrongTypeException(e);
+								if(state.getSavedObjects().containsKey(value)){
+									Object o  = state.getSavedObjects().get(value);
+									if(o.getClass().equals(type)){
+										return o;
+									}
+								}else{
+									throw new WrongTypeException(e);
+								}
 							}
 						}
 					}					
