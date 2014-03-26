@@ -90,4 +90,20 @@ public class Utils {
 		return map.get(primitive);
 	}
 	
+	public static String getClassName(String fieldName) {
+		String[] arr = fieldName.split("\\.");
+		
+		if (arr.length == 1) {
+			return "";
+		} else {
+			return fieldName.substring(0, fieldName.length() - arr[arr.length - 1].length() - 1);
+		}
+	}
+	
+	public static String getAttributeName(String fieldName) {
+		String[] arr = fieldName.split("\\.");
+		
+		return arr[arr.length - 1];
+	}
+	
 }

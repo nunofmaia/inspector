@@ -5,6 +5,7 @@ import ist.meic.pa.TypeChecking;
 import ist.meic.pa.Utils;
 import ist.meic.pa.annotations.Type;
 import ist.meic.pa.exceptions.InvalidArgumentException;
+import ist.meic.pa.exceptions.WrongTypeException;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -19,63 +20,76 @@ public class MCommand extends Command {
 	}
 
 	@Override
-	public InspectionState execute() throws IllegalArgumentException, IllegalAccessException, InvalidArgumentException {
+	public InspectionState execute() throws NoSuchFieldException {
+
 		if (this.args.length == 2) {
-			Object obj = this.state.getCurrentObject();
+			Class<?> clazz = this.state.getCurrentObject().getClass();
 			String attr = this.args[0];
 			String value = this.args[1];
-			ArrayList<Field> fields = Utils.getField(obj, attr);
-			
-			if (fields.size() == 0) {
-				System.err.println("The field " + attr + " does not exist.");
-			} else if (fields.size() == 1) {
-				updateField(fields.get(0), value);
-			} else {
-				System.err.println("There are more than one field with the name " + attr + ". Please enter the number of the field you want to choose.");
-				Utils.dumpChoiceList(fields);
 
-				handleChoice(fields, value);
+			Field field = getField(clazz, attr);
+			try {
+				updateField(field, value);
+			} catch (IllegalArgumentException e) {
+				System.err
+						.println("The value does not match the type of the field.");
+			} catch (IllegalAccessException e) {
+				System.err
+						.println("The value does not match the type of the field.");
 			}
-		} else {
-			throw new InvalidArgumentException();
+
 		}
-		
+
 		return this.state;
 
 	}
-	
-	private void updateField(Field field, String value) throws IllegalArgumentException, IllegalAccessException {
+
+	private Field getField(Class<?> clazz, String fieldName)
+			throws NoSuchFieldException {
+
+		String className = Utils.getClassName(fieldName);
+		String attr = Utils.getAttributeName(fieldName);
+		
+		try {
+			if (className.isEmpty()) {
+				return clazz.getDeclaredField(fieldName);
+			} else {
+				Class<?> newClazz = Class.forName(className);
+				return newClazz.getDeclaredField(attr);
+			}
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchFieldException e) {
+			Class<?> superClazz = clazz.getSuperclass();
+			if (superClazz != null) {
+				return getField(superClazz, fieldName);
+			} else {
+				throw new NoSuchFieldException();
+			}
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			throw new NoSuchFieldException();
+		}
+
+		return null;
+
+	}
+
+	private void updateField(Field field, String value)
+			throws IllegalArgumentException, IllegalAccessException {
 		Object obj = this.state.getCurrentObject();
 		field.setAccessible(true);
 		Class<?> c = field.get(obj).getClass();
-		field.set(obj, processType(c, value));
-		this.state.updateState(obj);
-	}
-
-	private void handleChoice(ArrayList<Field> fields, String value) throws IllegalArgumentException, IllegalAccessException {
-		Scanner scanner = new Scanner(System.in);
-		boolean isActive = true;
-		while (isActive) {
-			System.err.print("Choice: ");
-			String[] command = scanner.nextLine().split(" ");
-
-			try {
-				int index = Integer.parseInt(command[0]);
-				if (index >= 0 && index < fields.size()) {
-					isActive = false;
-					updateField(fields.get(index), value);
-					
-				} else {
-					System.err.println("Enter a valid number between 0 and " + (fields.size() - 1) + ".");
-				}
-			} catch (NumberFormatException e) {
-				System.err.println("Enter a valid number between 0 and " + (fields.size() - 1) + ".");
-			}
+		try {
+			field.set(obj, processType(c, value));
+			this.state.updateState(obj);
+		} catch (WrongTypeException e) {
+			System.err.println("The field and value types are different.");
 		}
-		scanner.close();
 	}
-	
-	private Object processType(Class<?> type, String value) {
+
+	private Object processType(Class<?> type, String value) throws WrongTypeException {
 		String typeName = type.getSimpleName();
 		Class<?> checker = TypeChecking.class;
 		for (Method m : checker.getDeclaredMethods()) {
@@ -83,7 +97,8 @@ public class MCommand extends Command {
 			if (t != null) {
 				if (type.isArray()) {
 					Class<?> arrayType = type.getComponentType();
-					String[] values = value.substring(1, value.length() - 1).split(",");
+					String[] values = value.substring(1, value.length() - 1)
+							.split(",");
 					Object arr = Array.newInstance(arrayType, values.length);
 					int index = 0;
 					for (String v : values) {
@@ -98,11 +113,10 @@ public class MCommand extends Command {
 							try {
 								return m.invoke(null, args);
 							} catch (Exception e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+								throw new WrongTypeException();
 							}
 						}
-					}					
+					}
 				}
 			}
 		}

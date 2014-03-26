@@ -73,6 +73,8 @@ public class Inspector {
 			this.state = cmd.execute();			
 		} catch (InvalidArgumentException e) {
 			System.err.println(cmd.usage());
+		} catch (NoSuchFieldException e) {
+			System.err.println("The inspected object does not have the field specified.");
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
