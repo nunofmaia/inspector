@@ -23,4 +23,9 @@ public class RCommand extends Command {
 		return this.state;
 	}
 
+	@Override
+	public String usage() {
+		return "Usage: u";
+	}
+
 }
