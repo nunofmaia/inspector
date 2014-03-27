@@ -24,15 +24,15 @@ public class MCommand extends Command {
 			String attr = this.args[0];
 			String value = this.args[1];
 
-			Field field = Utils.getField(clazz, attr);
 			try {
+				Field field = Utils.getField(clazz, attr);
 				updateField(field, value);
 			} catch (IllegalArgumentException e) {
 				System.err
 						.println("The value does not match the type of the field.");
 			} catch (IllegalAccessException e) {
 				System.err
-						.println("The value does not match the type of the field.");
+						.println("Cannot access the specified field.");
 			}
 
 		}

@@ -5,6 +5,7 @@ public class Test extends SuperTest {
 	public int d;
 	public boolean b;
 	public String name = "Test";
+	public static String stField = "hello";
 	
 	public Test m1(){
 		System.out.println("Hello, I am " + this);
@@ -120,5 +121,9 @@ public class Test extends SuperTest {
 	
 	public void twoVars(int i, String s) {
 		System.out.println("There are two variables saved: " + i + " and "+ s);
+	}
+	
+	public static void staticM() {
+		System.out.println("static method is never called");
 	}
 }

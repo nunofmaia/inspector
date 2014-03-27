@@ -2,6 +2,7 @@ package ist.meic.pa;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +26,10 @@ public class Utils {
 		ArrayList<Field> allFields = new ArrayList<Field>();
 		while (c != null) {
 			for (Field f : c.getDeclaredFields()) {
-				allFields.add(f);
+				int mod = f.getModifiers();
+				if (!Modifier.isStatic(mod)) {
+					allFields.add(f);					
+				}
 			}
 			c = c.getSuperclass();
 		}
@@ -71,17 +75,26 @@ public class Utils {
 	}
 	
 	public static Field getField(Class<?> clazz, String fieldName)
-			throws NoSuchFieldException {
+			throws NoSuchFieldException, IllegalAccessException {
 
 		String className = getClassName(fieldName);
 		String attr = getAttributeName(fieldName);
 		
 		try {
+			Field f = null;
+			int modifier;
+			
 			if (className.isEmpty()) {
-				return clazz.getDeclaredField(fieldName);
+				f = clazz.getDeclaredField(fieldName);
+				modifier = f.getModifiers();
 			} else {
 				Class<?> newClazz = Class.forName(className);
-				return newClazz.getDeclaredField(attr);
+				f = newClazz.getDeclaredField(attr);
+				modifier = f.getModifiers();
+			}
+			
+			if (!Modifier.isStatic(modifier)) {
+				return f;
 			}
 		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
@@ -98,7 +111,7 @@ public class Utils {
 			throw new NoSuchFieldException();
 		}
 
-		return null;
+		throw new IllegalAccessException();
 
 	}
 	
@@ -106,7 +119,12 @@ public class Utils {
 			throws NoSuchMethodException {
 		
 		try {
-			return clazz.getDeclaredMethod(methodName);
+			Method m = clazz.getDeclaredMethod(methodName);
+			int modifier = m.getModifiers();
+			
+			if (!Modifier.isStatic(modifier)) {
+				return m;
+			}
 		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -119,7 +137,7 @@ public class Utils {
 			}
 		}
 
-		return null;
+		throw new NoSuchMethodException();
 
 	}
 

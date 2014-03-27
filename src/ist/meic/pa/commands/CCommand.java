@@ -3,19 +3,15 @@
 import ist.meic.pa.InspectionState;
 import ist.meic.pa.TypeChecking;
 import ist.meic.pa.Utils;
-import ist.meic.pa.annotations.Type;
 import ist.meic.pa.exceptions.InvalidArgumentException;
 import ist.meic.pa.exceptions.TooManyMethodsException;
 import ist.meic.pa.exceptions.WrongTypeException;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 
 public class CCommand extends Command {
 
@@ -25,7 +21,7 @@ public class CCommand extends Command {
 
 	@Override
 	public InspectionState execute() throws IllegalArgumentException,
-			IllegalAccessException, InvalidArgumentException {
+			IllegalAccessException, InvalidArgumentException, NoSuchMethodException {
 		
 		if (args.length > 1) {
 			return handleMethodWithParams();
@@ -70,7 +66,7 @@ public class CCommand extends Command {
 	}
 
 	private InspectionState handleMethod() throws IllegalAccessException,
-			IllegalArgumentException {
+			IllegalArgumentException, NoSuchMethodException {
 		try {
 			Object current = this.state.getCurrentObject();
 			Method method = Utils.getMethod(current.getClass(), args[0]);
@@ -88,9 +84,6 @@ public class CCommand extends Command {
 				this.state.setCurrentObject(result);			
 			}
 
-			return this.state;
-		} catch (NoSuchMethodException e) {
-			System.err.println("Unable to fulfill request");
 			return this.state;
 		} catch (SecurityException e) {
 			System.err.println("Unable to fulfill request");
