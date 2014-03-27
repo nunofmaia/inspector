@@ -5,21 +5,12 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Utils {
-	
-	private final static Map<Class<?>, Class<?>> map = new HashMap<Class<?>, Class<?>>();
-	static {
-	    map.put(boolean.class, Boolean.class);
-	    map.put(byte.class, Byte.class);
-	    map.put(short.class, Short.class);
-	    map.put(char.class, Character.class);
-	    map.put(int.class, Integer.class);
-	    map.put(long.class, Long.class);
-	    map.put(float.class, Float.class);
-	    map.put(double.class, Double.class);
-	}
 
 	public static ArrayList<Field> getAllFields(Object object) {
 		Class<?> c = object.getClass();
@@ -150,26 +141,16 @@ public class Utils {
 	
 
 	public static void dumpObject(Object object) throws IllegalAccessException {
-		
-		Class<?> c = object.getClass();
-		
-		
-		if (map.containsValue(c)) {
-			System.err.println(object);
-		} else {
-			System.err.println(object + " is an instance of class "
-					+ object.getClass());
-			System.err.println("--------------");
 
-			for (Field f : Utils.getAllFields(object)) {
-				f.setAccessible(true);
-				System.err.println(f + " = " + f.get(object));
-			}
+		System.err.println(object + " is an instance of class "
+				+ object.getClass());
+		System.err.println("--------------");
+
+		for (Field f : Utils.getAllFields(object)) {
+			f.setAccessible(true);
+			System.err.println(f + " = " + f.get(object));
 		}
-	}
-	
-	public static Class<?> getWrapper(Class<?> primitive) {
-		return map.get(primitive);
+
 	}
 	
 	public static String getClassName(String fieldName) {
@@ -212,6 +193,28 @@ public class Utils {
 	
 	public static boolean isArray(String value) {
 		return (value.charAt(0) == '[' && value.charAt(value.length() - 1) == ']');
+	}
+	
+	public static String[] splitInput(String input) {
+		List<String> list = new ArrayList<String>();
+		String pattern = "(\\\"[^\\\"\\\\\\\\]*(?:\\\\.[^\\\"\\\\\\\\]*)*\\\"|\\[.*\\])";
+		Pattern p = Pattern.compile(pattern);
+		Matcher m = p.matcher(input);
+		
+		String[] rep = input.replaceAll(pattern, "?").split(" ");
+		String[] result = new String[rep.length];
+		
+		for (String r : rep) {
+			if (r.equals("?")) {
+				m.find();
+				list.add(m.group(1));
+			} else {
+				list.add(r);
+			}
+		}
+		
+		
+		return list.toArray(result);
 	}
 	
 }

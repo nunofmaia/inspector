@@ -40,7 +40,8 @@ public class Inspector {
 		
 		while (true) {
 			System.err.print("> ");
-			String[] command = scanner.nextLine().split(" +");
+//			String[] command = scanner.nextLine().split(" ");
+			String[] command = Utils.splitInput(scanner.nextLine());
 			
 			try {
 				executeCommand(command);

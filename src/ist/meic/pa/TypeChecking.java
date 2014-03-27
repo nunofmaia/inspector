@@ -63,6 +63,7 @@ public class TypeChecking {
 	@Type("String")
 	public static Object processString(String value) throws WrongTypeException {
 		if (value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"') {
+			value = value.replaceAll("\\\\\"", "\"");
 			return value.substring(1, value.length() - 1);			
 		}
 		

@@ -44,7 +44,8 @@ public class CCommand extends Command {
 //			Object result = m.invoke(this.state.getCurrentObject(),
 //					methodParameters);
 			if (result != null) {
-				this.state.setCurrentObject(result);				
+				this.state.setCurrentObject(result);
+				Utils.dumpObject(result);
 			}
 
 			return this.state;
@@ -74,7 +75,9 @@ public class CCommand extends Command {
 			
 			
 			if (method.getReturnType().isPrimitive()) {
-				System.err.println(result);
+				if (result != null) {
+					System.err.println(result);
+				}
 				result = null;
 			} else {
 				Utils.dumpObject(result);
@@ -227,7 +230,9 @@ public class CCommand extends Command {
 			Object[] params = possibleMethods.get(v).toArray();
 			Object result = mth.invoke(this.state.getCurrentObject(), params);
 			if (mth.getReturnType().isPrimitive()) {
-				System.err.println(result);
+				if (result != null) {
+					System.err.println(result);
+				}
 				return null;
 			} else {
 				return result;
