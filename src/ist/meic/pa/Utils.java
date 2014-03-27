@@ -44,11 +44,37 @@ public class Utils {
 		return allMethods;
 	}
 	
+	public static ArrayList<Method> getAllMethods(Object object, String methodName, int argsLength) throws NoSuchMethodException {
+		Class<?> c = object.getClass();
+		ArrayList<Method> allMethods = new ArrayList<Method>();
+		while (c != null) {
+			for (Method f : c.getDeclaredMethods()) {
+				String name = f.getName();
+				int size = f.getParameterTypes().length;
+				if (methodName.equals(name) && size == argsLength) {
+					allMethods.add(f);				
+				}
+			}
+			
+			if (allMethods.size() > 0) {
+				return allMethods;
+			}
+			
+			c = c.getSuperclass();
+		}
+		
+		if (allMethods.isEmpty()) {
+			throw new NoSuchMethodException();
+		}
+		
+		return allMethods;
+	}
+	
 	public static Field getField(Class<?> clazz, String fieldName)
 			throws NoSuchFieldException {
 
-		String className = Utils.getClassName(fieldName);
-		String attr = Utils.getAttributeName(fieldName);
+		String className = getClassName(fieldName);
+		String attr = getAttributeName(fieldName);
 		
 		try {
 			if (className.isEmpty()) {
@@ -76,6 +102,28 @@ public class Utils {
 
 	}
 	
+	public static Method getMethod(Class<?> clazz, String methodName)
+			throws NoSuchMethodException {
+		
+		try {
+			return clazz.getDeclaredMethod(methodName);
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			Class<?> superClazz = clazz.getSuperclass();
+			if (superClazz != null) {
+				return getMethod(superClazz, methodName);
+			} else {
+				throw new NoSuchMethodException();
+			}
+		}
+
+		return null;
+
+	}
+
+	
 	public static void dumpChoiceList(ArrayList<?> list) {
 		for (int i = 0; i < list.size(); i++) {
 			System.err.println("[" + i + "] " + list.get(i));
@@ -84,7 +132,9 @@ public class Utils {
 	
 
 	public static void dumpObject(Object object) throws IllegalAccessException {
+		
 		Class<?> c = object.getClass();
+		
 		
 		if (map.containsValue(c)) {
 			System.err.println(object);
@@ -118,6 +168,32 @@ public class Utils {
 		String[] arr = fieldName.split("\\.");
 		
 		return arr[arr.length - 1];
+	}
+	
+	public static boolean isSameType(Class<?> t1, Class<?> t2) {
+		if (t1.isPrimitive()) {
+			Field f;
+			try {
+				f = t2.getField("TYPE");
+				Object t = f.get(null);
+				return t1.getSimpleName().equals(t.toString());
+			} catch (SecurityException e) {
+				return false;
+			} catch (NoSuchFieldException e) {
+				return false;
+			} catch (IllegalArgumentException e) {
+				return false;
+			} catch (IllegalAccessException e) {
+				return false;
+			}
+		}
+			
+		return t2.equals(t1);
+
+	}
+	
+	public static boolean isArray(String value) {
+		return (value.charAt(0) == '[' && value.charAt(value.length() - 1) == ']');
 	}
 	
 }

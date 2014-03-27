@@ -5,12 +5,16 @@ import ist.meic.pa.TypeChecking;
 import ist.meic.pa.Utils;
 import ist.meic.pa.annotations.Type;
 import ist.meic.pa.exceptions.InvalidArgumentException;
+import ist.meic.pa.exceptions.TooManyMethodsException;
 import ist.meic.pa.exceptions.WrongTypeException;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class CCommand extends Command {
@@ -38,18 +42,21 @@ public class CCommand extends Command {
 	private InspectionState handleMethodWithParams()
 			throws IllegalAccessException, IllegalArgumentException {
 		try {
-			ArrayList<Method> methods = getMethodsByName();
-			System.err.println("There are more than one method with the name " + args[0] + ". Please enter the number of the method you want to choose.");
-			Utils.dumpChoiceList(methods);
-			Method m = handleChoice(methods);
-			Object[] methodParameters = getMethodParameters(m);
-			Object result = m.invoke(this.state.getCurrentObject(),
-					methodParameters);
-			this.state.setCurrentObject(result);
+			ArrayList<Method> methods = Utils.getAllMethods(this.state.getCurrentObject(), args[0], args.length - 1);
+			Object result = handleChoice(methods);
+//			Object[] methodParameters = getMethodParameters(m);
+//			Object result = m.invoke(this.state.getCurrentObject(),
+//					methodParameters);
+			if (result != null) {
+				this.state.setCurrentObject(result);				
+			}
 
 			return this.state;
 		} catch (WrongTypeException e) {
 			System.err.println("The arguments do not match the method signature.");
+			return this.state;
+		} catch (TooManyMethodsException e) {
+			System.err.println("There are too many methods to make a decision.");
 			return this.state;
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
@@ -66,7 +73,8 @@ public class CCommand extends Command {
 			IllegalArgumentException {
 		try {
 			Object current = this.state.getCurrentObject();
-			Object result = current.getClass().getDeclaredMethod(args[0]).invoke(current);
+			Method method = Utils.getMethod(current.getClass(), args[0]);
+			Object result = method.invoke(current);
 
 			if (result != null) {
 				this.state.setCurrentObject(result);			
@@ -86,129 +94,146 @@ public class CCommand extends Command {
 
 	}
 
-	private Object[] getMethodParameters(Method m) throws WrongTypeException {
-		ArrayList<Object> methodPar = new ArrayList<Object>();
-		for (int i = 0; i < m.getParameterTypes().length; i++) {
-			Class<?> par = m.getParameterTypes()[i];
-			String parValue = args[i + 1];
-
-			methodPar.add(processType(par, parValue));
-
-		}
-
-		return methodPar.toArray();
-	}
-
-
-//	public void addParameter(ArrayList<Object> params, String value,
-//			Class<?> clazz) {
+//	private Object[] getMethodParameters(Method m) throws WrongTypeException {
+//		ArrayList<Object> methodPar = new ArrayList<Object>();
+//		Class<?>[] params = m.getParameterTypes();
+//		for (int i = 0; i < params.length; i++) {
+//			Class<?> par = params[i];
+//			String parValue = args[i + 1];
 //
-//		try {
-//			Constructor<?> con = clazz.getConstructor(String.class);
-//			Object[] sdoid = new Object[] { value };
-//			params.add(con.newInstance(sdoid));
-//		} catch (Exception e) {
-//			System.err.println("error");
+//			methodPar.add(processType(par, parValue));
+//
 //		}
+//
+//		return methodPar.toArray();
 //	}
-
-	private ArrayList<Method> getMethodsByName() throws NoSuchMethodException {
-		ArrayList<Method> methods = new ArrayList<Method>();
-		for (Method m : Utils.getAllMethods(this.state.getCurrentObject())) {
-			if (m.getName().equals(args[0])
-					&& m.getParameterTypes().length == (args.length - 1)) {
-				methods.add(m);
-			}
-		}
-		
-		if (methods.size() == 0) {
-			throw new NoSuchMethodException();			
-		}
-		
-		return methods;
-
-	}
-
-	private Object processType(Class<?> type, String value) throws WrongTypeException {
-		String typeName = type.getSimpleName();
+//
+//	private Object processType(Class<?> type, String value) throws WrongTypeException {
+//		String typeName = type.getSimpleName();
+//		Class<?> checker = TypeChecking.class;
+//		boolean hasMatch = false;
+//		for (Method m : checker.getDeclaredMethods()) {
+//			Type t = m.getAnnotation(Type.class);
+//			if (t != null) {
+//				if (type.isArray()) {
+//					Class<?> arrayType = type.getComponentType();
+//					String[] values = value.substring(1, value.length() - 1).split(",");
+//					Object arr = Array.newInstance(arrayType, values.length);
+//					int index = 0;
+//					
+//					
+//						for (String v : values) {
+//							Array.set(arr, index, processType(arrayType, v));
+//							index++;
+//						}
+//						return arr;
+//					
+//				} else {
+//					for (String v : t.value()) {
+//						if (v.equals(typeName)) {
+//							hasMatch = true;
+//							Object[] args = new Object[] { value };
+//							try {
+//								return m.invoke(null, args);
+//							} catch (Exception e) {
+//								if(state.getSavedObjects().containsKey(value)){
+//									Object o  = state.getSavedObjects().get(value);
+//									if(o.getClass().equals(type)){
+//										return o;
+//									}
+//								}else{
+//									throw new WrongTypeException(e);
+//								}
+//							}
+//						}
+//					}					
+//				}
+//			}
+//		}
+//		if(!hasMatch && state.getSavedObjects().containsKey(value)){
+//			Object o  = state.getSavedObjects().get(value);
+//			if(o.getClass().equals(type)){
+//				return o;
+//			}
+//		}
+//
+//		return null;
+//	}
+	
+	private ArrayList<Object> checkPossibleTypes(String value) {
 		Class<?> checker = TypeChecking.class;
-		boolean hasMatch = false;
-		for (Method m : checker.getDeclaredMethods()) {
-			Type t = m.getAnnotation(Type.class);
-			if (t != null) {
-				if (type.isArray()) {
-					Class<?> arrayType = type.getComponentType();
-					String[] values = value.substring(1, value.length() - 1).split(",");
-					Object arr = Array.newInstance(arrayType, values.length);
-					int index = 0;
-					
-					
-						for (String v : values) {
-							Array.set(arr, index, processType(arrayType, v));
-							index++;
-						}
-						return arr;
-					
-				} else {
-					for (String v : t.value()) {
-						if (v.equals(typeName)) {
-							hasMatch = true;
-							Object[] args = new Object[] { value };
-							try {
-								return m.invoke(null, args);
-							} catch (Exception e) {
-								if(state.getSavedObjects().containsKey(value)){
-									Object o  = state.getSavedObjects().get(value);
-									if(o.getClass().equals(type)){
-										return o;
-									}
-								}else{
-									throw new WrongTypeException(e);
-								}
-							}
-						}
-					}					
-				}
+		ArrayList<Object> types = new ArrayList<Object>();
+	
+		for (Method f : checker.getDeclaredMethods()) {
+			try {
+				Object[] args = new Object[] { value };
+				Object o = f.invoke(null, args);
+				types.add(o);
+			} catch (Exception e) {
+				// Catch exception and continue loop
 			}
 		}
-		if(!hasMatch && state.getSavedObjects().containsKey(value)){
-			Object o  = state.getSavedObjects().get(value);
-			if(o.getClass().equals(type)){
-				return o;
+		
+		if (types.isEmpty()) {
+			Map<String, Object> map = this.state.getSavedObjects();
+			if (map.containsKey(value)) {
+				Object o = map.get(value);
+				types.add(o);
 			}
 		}
-
-		return null;
+		
+		return types;
 	}
 	
-	private Method handleChoice(ArrayList<Method> methods) throws IllegalArgumentException, IllegalAccessException {
-		Scanner scanner = new Scanner(System.in);
-		boolean isActive = true;
-		while (isActive) {
-			System.err.print("Choice: ");
-			String[] command = scanner.nextLine().split(" ");
-
-			try {
-				int index = Integer.parseInt(command[0]);
-				if (index >= 0 && index < methods.size()) {
-					isActive = false;
-					Method m = methods.get(index);
-					return m;
-					
-				} else {
-					System.err.println("Enter a valid number between 0 and " + (methods.size() - 1) + ".");
-				}
-			} catch (NumberFormatException e) {
-				System.err.println("Enter a valid number between 0 and " + (methods.size() - 1) + ".");
+	private Object handleChoice(ArrayList<Method> methods) throws Exception {
+		
+		Map<Integer, ArrayList<Object>> possibleTypes = new HashMap<Integer, ArrayList<Object>>();
+		Map<Integer, ArrayList<Object>> possibleMethods = new HashMap<Integer, ArrayList<Object>>();
+		
+		for (int i = 1; i < args.length; i++) {
+			ArrayList<Object> types = checkPossibleTypes(args[i]);
+			if (types.isEmpty()) {
+				throw new InvalidArgumentException();
+			} else {
+				possibleTypes.put(i, types);
 			}
 		}
-		scanner.close();
-		return null;
+		
+		for (int m = 0; m < methods.size(); m++) {
+			Method mth = methods.get(m);
+			Class<?>[] paramsTypes = mth.getParameterTypes();
+			ArrayList<Object> paramsValues = new ArrayList<Object>();
+			for (int i = 0; i < paramsTypes.length; i++) {
+				Class<?> type = paramsTypes[i];
+				ArrayList<Object> possibilities = possibleTypes.get(i + 1);
+				
+				for (Object o : possibilities) {
+					if (Utils.isSameType(type, o.getClass())) {
+						paramsValues.add(o);
+					}
+					
+				}
+			}
+			
+			if (paramsValues.size() == paramsTypes.length) {
+				possibleMethods.put(m, paramsValues);
+			}
+		}
+		
+		if (possibleMethods.size() == 1) {
+			int v = (Integer)possibleMethods.keySet().toArray()[0];
+			Method mth = methods.get(v);
+			Object[] params = possibleMethods.get(v).toArray();
+			return mth.invoke(this.state.getCurrentObject(), params);
+		} else {
+			throw new TooManyMethodsException();
+		}
+		
 	}
 	
 	@Override
 	public String usage() {
-		return "Usage: c <method> <arg-1> ... <arg-n>";
+		return "Usage: c <method> <arg1> ... <argN>";
 	}
 
 }

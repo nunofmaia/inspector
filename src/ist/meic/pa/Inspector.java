@@ -4,6 +4,7 @@ package ist.meic.pa;
 import ist.meic.pa.commands.Command;
 import ist.meic.pa.exceptions.InvalidArgumentException;
 import ist.meic.pa.exceptions.QuitException;
+import ist.meic.pa.exceptions.TooManyMethodsException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -76,6 +77,10 @@ public class Inspector {
 			System.err.println(cmd.usage());
 		} catch (NoSuchFieldException e) {
 			System.err.println("The inspected object does not have the specified field.");
+		} catch (NoSuchMethodException e) {
+			System.err.println("The inspected object does not have the specified method.");
+		} catch (TooManyMethodsException e) {
+			System.err.println("There are too many methods to make a decision.");
 		}
 		
 		Utils.dumpObject(this.state.getCurrentObject());

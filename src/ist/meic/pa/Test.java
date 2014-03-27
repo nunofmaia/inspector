@@ -101,4 +101,24 @@ public class Test extends SuperTest {
 		return this;
 
 	}
+	
+	public void m5() {
+		System.out.println("Call from class");
+	}
+	
+	public void m6(Integer i) {
+		System.out.println("This is an integer: " + i);
+	}
+	
+	public void m7(Integer i, Integer k) {
+		System.out.println("Two integers: " + i + " and " + k);
+	}
+	
+	public void m7(Float f, Float k) {
+		System.out.println("A float and an integer: " + f + " and " + k);
+	}
+	
+	public void twoVars(int i, String s) {
+		System.out.println("There are two variables saved: " + i + " and "+ s);
+	}
 }
