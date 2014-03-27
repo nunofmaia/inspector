@@ -2,6 +2,7 @@ package ist.meic.pa.commands;
 
 import ist.meic.pa.InspectionState;
 import ist.meic.pa.Node;
+import ist.meic.pa.Utils;
 
 public class RCommand extends Command {
 
@@ -20,6 +21,7 @@ public class RCommand extends Command {
 			this.state.setCurrentNode(nextNode);			
 		}
 		
+		Utils.dumpObject(this.state.getCurrentObject());
 		return this.state;
 	}
 

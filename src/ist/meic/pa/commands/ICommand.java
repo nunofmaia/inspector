@@ -37,7 +37,12 @@ public class ICommand extends Command {
 		Object obj = this.state.getCurrentObject();
 		f.setAccessible(true);
 		obj = f.get(obj);
-		this.state.setCurrentObject(obj);
+		if (!f.getType().isPrimitive()) {
+			this.state.setCurrentObject(obj);
+			Utils.dumpObject(obj);
+		} else {
+			System.err.println(obj);
+		}
 	}
 
 	@Override

@@ -75,6 +75,14 @@ public class CCommand extends Command {
 			Object current = this.state.getCurrentObject();
 			Method method = Utils.getMethod(current.getClass(), args[0]);
 			Object result = method.invoke(current);
+			
+			
+			if (method.getReturnType().isPrimitive()) {
+				System.err.println(result);
+				result = null;
+			} else {
+				Utils.dumpObject(result);
+			}
 
 			if (result != null) {
 				this.state.setCurrentObject(result);			
@@ -224,7 +232,13 @@ public class CCommand extends Command {
 			int v = (Integer)possibleMethods.keySet().toArray()[0];
 			Method mth = methods.get(v);
 			Object[] params = possibleMethods.get(v).toArray();
-			return mth.invoke(this.state.getCurrentObject(), params);
+			Object result = mth.invoke(this.state.getCurrentObject(), params);
+			if (mth.getReturnType().isPrimitive()) {
+				System.err.println(result);
+				return null;
+			} else {
+				return result;
+			}
 		} else {
 			throw new TooManyMethodsException();
 		}

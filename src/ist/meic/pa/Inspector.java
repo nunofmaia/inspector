@@ -82,8 +82,7 @@ public class Inspector {
 		} catch (TooManyMethodsException e) {
 			System.err.println("There are too many methods to make a decision.");
 		}
-		
-		Utils.dumpObject(this.state.getCurrentObject());
+
 	}
 
 	public static void main(String[] args) {

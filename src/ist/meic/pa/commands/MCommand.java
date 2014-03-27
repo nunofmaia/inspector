@@ -49,6 +49,7 @@ public class MCommand extends Command {
 		try {
 			field.set(obj, processType(c, value));
 			this.state.updateState(obj);
+			Utils.dumpObject(obj);
 		} catch (WrongTypeException e) {
 			System.err.println("The field and value types are different.");
 		}
@@ -57,6 +58,7 @@ public class MCommand extends Command {
 	private Object processType(Class<?> type, String value) throws WrongTypeException {
 		String typeName = type.getSimpleName();
 		Class<?> checker = TypeChecking.class;
+		boolean hasMatch = false;
 		for (Method m : checker.getDeclaredMethods()) {
 			Type t = m.getAnnotation(Type.class);
 			if (t != null) {
@@ -74,15 +76,31 @@ public class MCommand extends Command {
 				} else {
 					for (String v : t.value()) {
 						if (v.equals(typeName)) {
+							hasMatch = true;
 							Object[] args = new Object[] { value };
 							try {
 								return m.invoke(null, args);
 							} catch (Exception e) {
-								throw new WrongTypeException();
+								if (state.getSavedObjects().containsKey(value)) {
+									Object o = state.getSavedObjects().get(
+											value);
+									if (o.getClass().equals(type)) {
+										return o;
+									}
+								} else {
+									throw new WrongTypeException(e);
+								}
 							}
 						}
 					}
 				}
+			}
+		}
+		
+		if (!hasMatch && state.getSavedObjects().containsKey(value)) {
+			Object o = state.getSavedObjects().get(value);
+			if (o.getClass().equals(type)) {
+				return o;
 			}
 		}
 
