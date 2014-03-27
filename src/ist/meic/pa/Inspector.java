@@ -15,18 +15,23 @@ public class Inspector {
 	
 	private InspectionState state;
 	
-	public void inspect(Object object) throws IllegalArgumentException, IllegalAccessException {
-		
-		if (object != null) {
-			this.state = new InspectionState(object);
-			
-			Utils.dumpObject(object);
-			
-			prompt();
-		} else {
-			System.err.println("The object you want to inspect is null.");
+	public void inspect(Object object) {
+
+		try {
+			if (object != null) {
+				this.state = new InspectionState(object);
+
+				Utils.dumpObject(object);
+				prompt();
+
+			} else {
+				System.err.println("The object you want to inspect is null.");
+			}
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
+
 	}
 	
 	private void prompt() {
@@ -87,16 +92,9 @@ public class Inspector {
 
 	public static void main(String[] args) {
 		Test s = new Test();
-		
-		try {
-			new Inspector().inspect(s);
-			System.out.println("Finished inspection and program");
-			System.out.println(1 + 1);
-		} catch (IllegalArgumentException e1) {
-			
-		} catch (IllegalAccessException e1) {
-			
-		}
+		new Inspector().inspect(s);
+		System.out.println("Finished inspection and program");
+		System.out.println(1 + 1);
 	}
 
 }

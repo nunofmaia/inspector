@@ -32,7 +32,8 @@
         description="generate the distribution" >
 
     <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
-    <jar jarfile="inspector.jar" basedir="./"/>
+  	<delete file="inspector.jar"/>
+    <jar jarfile="inspector.jar" basedir="${build}"/>
   </target>
 
   <target name="clean"
