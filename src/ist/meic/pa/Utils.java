@@ -201,7 +201,7 @@ public class Utils {
 		Pattern p = Pattern.compile(pattern);
 		Matcher m = p.matcher(input);
 		
-		String[] rep = input.replaceAll(pattern, "?").split(" ");
+		String[] rep = input.replaceAll(pattern, "?").split("\\s+");
 		String[] result = new String[rep.length];
 		
 		for (String r : rep) {

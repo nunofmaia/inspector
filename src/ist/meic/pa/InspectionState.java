@@ -27,7 +27,7 @@ public class InspectionState {
 	}
 	
 	public void updateState(Object updatedObject) {
-		this.currentNode.setNext(null);
+		removeNext();
 		this.currentNode.setObject(updatedObject);
 	}
 	
@@ -41,5 +41,9 @@ public class InspectionState {
 	
 	public Map<String, Object> getSavedObjects() {
 		return savedObjects;
+	}
+	
+	public void removeNext() {
+		this.currentNode.setNext(null);
 	}
 }
