@@ -1,6 +1,7 @@
 package ist.meic.pa;
 
 import ist.meic.pa.annotations.Type;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -143,9 +144,41 @@ public class Utils {
 
 		for (Field f : Utils.getAllFields(object)) {
 			f.setAccessible(true);
-			System.err.println(f + " = " + f.get(object));
+			Class<?> clazz = f.getType();
+			Object o = f.get(object);
+			if (clazz.equals(String.class)) {
+				System.err.println(f + " = " + dumpString(o));
+			} else if (clazz.isArray()) {
+				System.err.println(f + " = " + dumpArray(o));
+			} else {
+				System.err.println(f + " = " + f.get(object));
+			}
 		}
 
+	}
+	
+	private static String dumpArray(Object o) {
+		Class<?> type = o.getClass().getComponentType();
+		int len = Array.getLength(o);
+		String result = "[ ";
+		
+		for (int i = 0; i < len; i++) {
+			if (type.equals(String.class)) {
+				Object s = Array.get(o, i);
+				result += dumpString(s) + " ";
+			} else {
+				result += o;
+			}
+		}
+		
+		result += "]";
+		
+		return result;
+		
+	}
+
+	private static String dumpString(Object s) {
+		return "\"" + s + "\"";
 	}
 
 	public static String getClassName(String fieldName) {
