@@ -217,4 +217,21 @@ public class Utils {
 		return list.toArray(result);
 	}
 	
+	public static String[] splitArrayStrings(String input) {
+		List<String> list = new ArrayList<String>();
+		String pattern = "(\\\"[^\\\"\\\\]*(?:\\\\.[^\\\"\\\\,]*)*\\\")";
+		Pattern p = Pattern.compile(pattern);
+		Matcher m = p.matcher(input);
+		
+		String[] rep = input.replaceAll(pattern, "?").split(",\\s*");
+		String[] result = new String[rep.length];
+		
+		while (m.find()) {
+			list.add(m.group(1));
+		}
+		
+		
+		return list.toArray(result);
+	}
+	
 }

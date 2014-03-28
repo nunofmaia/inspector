@@ -125,8 +125,19 @@ public class CCommand extends Command {
 			if (t != null) {
 				if (type.isArray()) {
 					Class<?> arrayType = type.getComponentType();
-					String[] values = value.substring(1, value.length() - 1).split(",\\s*");
-					Object arr = Array.newInstance(arrayType, values.length);
+					String[] values;
+					Object arr = null;
+					if (value.charAt(0) == '[' && value.charAt(value.length() - 1) == ']') {
+						value = value.substring(1, value.length() - 1);
+						if (arrayType.equals(String.class)) {
+							values = Utils.splitArrayStrings(value);
+						} else {
+							values = value.split(",\\s*");
+						}
+						arr = Array.newInstance(arrayType, values.length);
+					} else {
+						return null;
+					}
 					int index = 0;
 					
 					

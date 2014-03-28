@@ -98,6 +98,16 @@ public class Test extends SuperTest {
 		return this;
 	}
 	
+	public void aStringArray(String[] arr) {
+		System.out.print("This is a string array: [");
+		for (String i : arr) {
+			System.out.print(" \"");
+			System.out.print(i);
+			System.out.print("\"");
+		}
+		System.out.println(" ]");
+	}
+	
 
 	public void noReturn() {
 		System.out.println("No turning back");
