@@ -60,6 +60,24 @@ public class TypeChecking {
 		throw new WrongTypeException();
 	}
 	
+	@Type({ "byte", "Byte" })
+	public static Object processByte(String value) throws WrongTypeException {
+		try {
+			return Byte.parseByte(value);
+		} catch (NumberFormatException e) {
+			throw new WrongTypeException();
+		}
+	}
+	
+	@Type({ "short", "Short" })
+	public static Object processShort(String value) throws WrongTypeException {
+		try {
+			return Short.parseShort(value);
+		} catch (NumberFormatException e) {
+			throw new WrongTypeException();
+		}
+	}
+	
 	@Type("String")
 	public static Object processString(String value) throws WrongTypeException {
 		if (value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"') {

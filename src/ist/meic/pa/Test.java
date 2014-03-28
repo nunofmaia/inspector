@@ -22,6 +22,16 @@ public class Test extends SuperTest {
 		return this;
 	}
 	
+	public Test m4(short s) {
+		System.out.println("Printing short " + s);
+		return this;
+	}
+	
+	public Test m9(byte b) {
+		System.out.println("Printing byte " + b);
+		return this;
+	}
+	
 	public Test sum(int i1, int i2){
 		System.out.println("Sum: " + (i1+i2));
 		return this;
@@ -125,5 +135,13 @@ public class Test extends SuperTest {
 	
 	public static void staticM() {
 		System.out.println("static method is never called");
+	}
+	
+	public short newShort() {
+		return 1;
+	}
+	
+	public byte otherByte() {
+		return 42;
 	}
 }
