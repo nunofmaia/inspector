@@ -24,8 +24,7 @@ public class ICommand extends Command {
 				System.err
 						.println("The inspected object does not have the specified field.");
 			} catch (IllegalAccessException e) {
-				System.err
-						.println("Cannot access the specified field.");
+				System.err.println("Cannot access the specified field.");
 			}
 
 		}
@@ -33,7 +32,8 @@ public class ICommand extends Command {
 		return this.state;
 	}
 
-	private void getField(Field f) throws IllegalArgumentException, IllegalAccessException {
+	private void getField(Field f) throws IllegalArgumentException,
+			IllegalAccessException {
 		Object obj = this.state.getCurrentObject();
 		f.setAccessible(true);
 		obj = f.get(obj);

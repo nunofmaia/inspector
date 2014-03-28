@@ -17,13 +17,14 @@ public class SCommand extends Command {
 		String name = args[0];
 		if(nameIsValid(name)){
 			if(!savedObjects.keySet().contains(name)){
-				savedObjects.put(name, state.getCurrentObject());
-				System.out.println("Objects saved: " +  savedObjects);
+				Object o = state.getCurrentObject();
+				savedObjects.put(name, o);
+				System.err.println("The object " + o + " was saved with the name \"" + name + "\"");
 			}else{
-				System.err.println("ERROR: Object with that name already exists");
+				System.err.println("Object with that name already exists.");
 			}
 		}else{
-			System.err.println("ERROR: variable names must either start with '_' or with a letter from 'a' to 'z'");
+			System.err.println("Variable names must either start with '_' or with a letter from 'a' to 'z'");
 		}
 		return state;
 	}

@@ -1,12 +1,12 @@
 package ist.meic.pa;
 
+import ist.meic.pa.annotations.Type;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,14 +19,14 @@ public class Utils {
 			for (Field f : c.getDeclaredFields()) {
 				int mod = f.getModifiers();
 				if (!Modifier.isStatic(mod)) {
-					allFields.add(f);					
+					allFields.add(f);
 				}
 			}
 			c = c.getSuperclass();
 		}
 		return allFields;
 	}
-	
+
 	public static ArrayList<Method> getAllMethods(Object object) {
 		Class<?> c = object.getClass();
 		ArrayList<Method> allMethods = new ArrayList<Method>();
@@ -38,8 +38,9 @@ public class Utils {
 		}
 		return allMethods;
 	}
-	
-	public static ArrayList<Method> getAllMethods(Object object, String methodName, int argsLength) throws NoSuchMethodException {
+
+	public static ArrayList<Method> getAllMethods(Object object,
+			String methodName, int argsLength) throws NoSuchMethodException {
 		Class<?> c = object.getClass();
 		ArrayList<Method> allMethods = new ArrayList<Method>();
 		while (c != null) {
@@ -47,34 +48,34 @@ public class Utils {
 				String name = f.getName();
 				int size = f.getParameterTypes().length;
 				if (methodName.equals(name) && size == argsLength) {
-					allMethods.add(f);				
+					allMethods.add(f);
 				}
 			}
-			
+
 			if (allMethods.size() > 0) {
 				return allMethods;
 			}
-			
+
 			c = c.getSuperclass();
 		}
-		
+
 		if (allMethods.isEmpty()) {
 			throw new NoSuchMethodException();
 		}
-		
+
 		return allMethods;
 	}
-	
+
 	public static Field getField(Class<?> clazz, String fieldName)
 			throws NoSuchFieldException, IllegalAccessException {
 
 		String className = getClassName(fieldName);
 		String attr = getAttributeName(fieldName);
-		
+
 		try {
 			Field f = null;
 			int modifier;
-			
+
 			if (className.isEmpty()) {
 				f = clazz.getDeclaredField(fieldName);
 				modifier = f.getModifiers();
@@ -83,13 +84,12 @@ public class Utils {
 				f = newClazz.getDeclaredField(attr);
 				modifier = f.getModifiers();
 			}
-			
+
 			if (!Modifier.isStatic(modifier)) {
 				return f;
 			}
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new NoSuchFieldException();
 		} catch (NoSuchFieldException e) {
 			Class<?> superClazz = clazz.getSuperclass();
 			if (superClazz != null) {
@@ -98,27 +98,25 @@ public class Utils {
 				throw new NoSuchFieldException();
 			}
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			throw new NoSuchFieldException();
 		}
 
 		throw new IllegalAccessException();
 
 	}
-	
+
 	public static Method getMethod(Class<?> clazz, String methodName)
 			throws NoSuchMethodException {
-		
+
 		try {
 			Method m = clazz.getDeclaredMethod(methodName);
 			int modifier = m.getModifiers();
-			
+
 			if (!Modifier.isStatic(modifier)) {
 				return m;
 			}
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
 		} catch (NoSuchMethodException e) {
 			Class<?> superClazz = clazz.getSuperclass();
 			if (superClazz != null) {
@@ -132,18 +130,15 @@ public class Utils {
 
 	}
 
-	
 	public static void dumpChoiceList(ArrayList<?> list) {
 		for (int i = 0; i < list.size(); i++) {
 			System.err.println("[" + i + "] " + list.get(i));
 		}
 	}
-	
 
 	public static void dumpObject(Object object) throws IllegalAccessException {
 
-		System.err.println(object + " is an instance of class "
-				+ object.getClass());
+		System.err.println(object + " is an instance of " + object.getClass());
 		System.err.println("--------------");
 
 		for (Field f : Utils.getAllFields(object)) {
@@ -152,23 +147,24 @@ public class Utils {
 		}
 
 	}
-	
+
 	public static String getClassName(String fieldName) {
 		String[] arr = fieldName.split("\\.");
-		
+
 		if (arr.length == 1) {
 			return "";
 		} else {
-			return fieldName.substring(0, fieldName.length() - arr[arr.length - 1].length() - 1);
+			return fieldName.substring(0, fieldName.length()
+					- arr[arr.length - 1].length() - 1);
 		}
 	}
-	
+
 	public static String getAttributeName(String fieldName) {
 		String[] arr = fieldName.split("\\.");
-		
+
 		return arr[arr.length - 1];
 	}
-	
+
 	public static boolean isSameType(Class<?> t1, Class<?> t2) {
 		if (t1.isPrimitive()) {
 			Field f;
@@ -176,34 +172,24 @@ public class Utils {
 				f = t2.getField("TYPE");
 				Object t = f.get(null);
 				return t1.getSimpleName().equals(t.toString());
-			} catch (SecurityException e) {
-				return false;
-			} catch (NoSuchFieldException e) {
-				return false;
-			} catch (IllegalArgumentException e) {
-				return false;
-			} catch (IllegalAccessException e) {
+			} catch (Exception e) {
 				return false;
 			}
 		}
-			
+
 		return t2.equals(t1);
 
 	}
-	
-	public static boolean isArray(String value) {
-		return (value.charAt(0) == '[' && value.charAt(value.length() - 1) == ']');
-	}
-	
+
 	public static String[] splitInput(String input) {
 		List<String> list = new ArrayList<String>();
 		String pattern = "(\\\"[^\\\"\\\\\\\\]*(?:\\\\.[^\\\"\\\\\\\\]*)*\\\"|\\[.*\\])";
 		Pattern p = Pattern.compile(pattern);
 		Matcher m = p.matcher(input);
-		
+
 		String[] rep = input.replaceAll(pattern, "?").split("\\s+");
 		String[] result = new String[rep.length];
-		
+
 		for (String r : rep) {
 			if (r.equals("?")) {
 				m.find();
@@ -212,26 +198,100 @@ public class Utils {
 				list.add(r);
 			}
 		}
-		
-		
+
 		return list.toArray(result);
 	}
-	
+
 	public static String[] splitArrayStrings(String input) {
 		List<String> list = new ArrayList<String>();
 		String pattern = "(\\\"[^\\\"\\\\]*(?:\\\\.[^\\\"\\\\,]*)*\\\")";
 		Pattern p = Pattern.compile(pattern);
 		Matcher m = p.matcher(input);
-		
+
 		String[] rep = input.replaceAll(pattern, "?").split(",\\s*");
 		String[] result = new String[rep.length];
-		
+
 		while (m.find()) {
 			list.add(m.group(1));
 		}
-		
-		
+
 		return list.toArray(result);
 	}
 	
+	public static Object processType(InspectionState state, Class<?> type,
+			String value) {
+		String typeName = type.getSimpleName();
+		Class<?> checker = TypeChecking.class;
+		boolean hasMatch = false;
+		for (Method m : checker.getDeclaredMethods()) {
+			Type t = m.getAnnotation(Type.class);
+			if (t != null) {
+				if (type.isArray()) {
+					return processArrayType(state, type, value);
+
+				} else {
+					for (String v : t.value()) {
+						if (v.equals(typeName)) {
+							hasMatch = true;
+							Object[] args = new Object[] { value };
+							try {
+								return m.invoke(null, args);
+							} catch (Exception e) {
+								if (state.getSavedObjects().containsKey(value)) {
+									Object o = state.getSavedObjects().get(
+											value);
+									if (o.getClass().equals(type)) {
+										return o;
+									}
+								} else {
+									return null;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		if (!hasMatch && state.getSavedObjects().containsKey(value)) {
+			Object o = state.getSavedObjects().get(value);
+			if (o.getClass().equals(type)) {
+				return o;
+			}
+		}
+
+		return null;
+	}
+	
+	private static Object processArrayType(InspectionState state, Class<?> type, String value) {
+		Class<?> arrayType = type.getComponentType();
+		String[] values;
+		Object arr = null;
+		if (value.charAt(0) == '['
+				&& value.charAt(value.length() - 1) == ']') {
+			value = value.substring(1, value.length() - 1);
+			if (arrayType.equals(String.class)) {
+				values = Utils.splitArrayStrings(value);
+			} else {
+				values = value.split(",\\s*");
+			}
+			arr = Array.newInstance(arrayType, values.length);
+		} else {
+			return null;
+		}
+		
+		int index = 0;
+		for (String v : values) {
+			Object o = processType(state, arrayType, v);
+
+			if (o != null) {
+				Array.set(arr, index, o);
+			} else {
+				return null;
+			}
+			index++;
+		}
+		
+		return arr;
+	}
 }

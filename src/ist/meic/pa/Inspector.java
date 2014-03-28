@@ -5,9 +5,9 @@ import ist.meic.pa.commands.Command;
 import ist.meic.pa.exceptions.InvalidArgumentException;
 import ist.meic.pa.exceptions.QuitException;
 import ist.meic.pa.exceptions.TooManyMethodsException;
+import ist.meic.pa.exceptions.WrongTypeException;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -28,8 +28,7 @@ public class Inspector {
 				System.err.println("The object you want to inspect is null.");
 			}
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
 		}
 
 	}
@@ -40,31 +39,19 @@ public class Inspector {
 		
 		while (true) {
 			System.err.print("> ");
-//			String[] command = scanner.nextLine().split(" ");
 			String[] command = Utils.splitInput(scanner.nextLine());
 			
 			try {
 				executeCommand(command);
 			} catch (ClassNotFoundException e) {
-				System.err.println("ERROR: Command not found.");
-			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				System.err.println("ERROR: Invalid syntax.");
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.err.println("Command not found.");
 			} catch (QuitException e) {
 				break;
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.err.println("Something went wrong...");
 			}			
 		}
+		
 		scanner.close();
 	}
 
@@ -87,6 +74,8 @@ public class Inspector {
 			System.err.println("The inspected object does not have the specified method.");
 		} catch (TooManyMethodsException e) {
 			System.err.println("There are too many methods to make a decision.");
+		} catch (WrongTypeException e) {
+			System.err.println("The value does not match the type of the field.");
 		}
 
 	}
