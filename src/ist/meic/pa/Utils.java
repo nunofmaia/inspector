@@ -28,6 +28,9 @@ public class Utils {
 		return allFields;
 	}
 
+	/**
+	 * Get all methods
+	 */
 	public static ArrayList<Method> getAllMethods(Object object) {
 		Class<?> c = object.getClass();
 		ArrayList<Method> allMethods = new ArrayList<Method>();
@@ -40,6 +43,9 @@ public class Utils {
 		return allMethods;
 	}
 
+	/**
+	 * Get all methods with a certain name and a specific args length
+	 */
 	public static ArrayList<Method> getAllMethods(Object object,
 			String methodName, int argsLength) throws NoSuchMethodException {
 		Class<?> c = object.getClass();
@@ -131,12 +137,6 @@ public class Utils {
 
 	}
 
-	public static void dumpChoiceList(ArrayList<?> list) {
-		for (int i = 0; i < list.size(); i++) {
-			System.err.println("[" + i + "] " + list.get(i));
-		}
-	}
-
 	public static void dumpObject(Object object) throws IllegalAccessException {
 
 		System.err.println(object + " is an instance of " + object.getClass());
@@ -156,12 +156,12 @@ public class Utils {
 		}
 
 	}
-	
+
 	private static String dumpArray(Object o) {
 		Class<?> type = o.getClass().getComponentType();
 		int len = Array.getLength(o);
 		String result = "[ ";
-		
+
 		for (int i = 0; i < len; i++) {
 			if (type.equals(String.class)) {
 				Object s = Array.get(o, i);
@@ -170,11 +170,11 @@ public class Utils {
 				result += o;
 			}
 		}
-		
+
 		result += "]";
-		
+
 		return result;
-		
+
 	}
 
 	private static String dumpString(Object s) {
@@ -250,7 +250,7 @@ public class Utils {
 
 		return list.toArray(result);
 	}
-	
+
 	public static Object processType(InspectionState state, Class<?> type,
 			String value) {
 		String typeName = type.getSimpleName();
@@ -295,13 +295,13 @@ public class Utils {
 
 		return null;
 	}
-	
-	private static Object processArrayType(InspectionState state, Class<?> type, String value) {
+
+	private static Object processArrayType(InspectionState state,
+			Class<?> type, String value) {
 		Class<?> arrayType = type.getComponentType();
 		String[] values;
 		Object arr = null;
-		if (value.charAt(0) == '['
-				&& value.charAt(value.length() - 1) == ']') {
+		if (value.charAt(0) == '[' && value.charAt(value.length() - 1) == ']') {
 			value = value.substring(1, value.length() - 1);
 			if (arrayType.equals(String.class)) {
 				values = Utils.splitArrayStrings(value);
@@ -312,7 +312,7 @@ public class Utils {
 		} else {
 			return null;
 		}
-		
+
 		int index = 0;
 		for (String v : values) {
 			Object o = processType(state, arrayType, v);
@@ -324,7 +324,7 @@ public class Utils {
 			}
 			index++;
 		}
-		
+
 		return arr;
 	}
 }
