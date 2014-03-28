@@ -80,11 +80,4 @@ public class Inspector {
 
 	}
 
-	public static void main(String[] args) {
-		Test s = new Test();
-		new Inspector().inspect(s);
-		System.out.println("Finished inspection and program");
-		System.out.println(1 + 1);
-	}
-
 }
